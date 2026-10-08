@@ -105,3 +105,37 @@ Buat file proxy.js di root proyek (Next.js 16). Semua rute /admin kecuali /admin
 ## Debugging dan fitur bonus
 
 Tambahkan bagian baru untuk setiap error yang kamu perbaiki atau fitur bonus yang kamu kerjakan.
+
+## Error-01
+
+**Prompt**
+Saat ini muncul error seperti ini 
+## Error Type
+Build Error
+
+## Error Message
+Proxy is missing expected function export name
+
+## Build Output
+./proxy.js
+Error: Proxy is missing expected function export name
+This function is what Next.js runs for every request handled by this proxy (previously called middleware).
+
+Why this happens:
+- You are migrating from `middleware` to `proxy`, but haven't updated the exported function.
+- The file exists but doesn't export a function.
+- The export is not a function (e.g., an object or constant).
+- There's a syntax error preventing the export from being recognized.
+
+To fix it:
+- Ensure this file has either a default or "proxy" function export.
+
+Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+Next.js version: 16.3.8 (Turbopack)
+
+**Hasil:**
+- Menganalisa penyebab error dari *Build Error*, yaitu Next.js versi 16 di proyek ini menggunakan konvensi `proxy` alih-alih `middleware`.
+
+**Perbaikan:**
+- Mengubah nama *export function* di dalam file `proxy.js` dari `export async function middleware(request)` menjadi `export async function proxy(request)`.
