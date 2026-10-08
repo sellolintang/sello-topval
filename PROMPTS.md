@@ -151,3 +151,46 @@ Ada kesalahan pada .env.local pada bagian supabase url, yaitu ada /reft/1
 
 **Perbaikan**
 Mengapus url yang berlebihan, yaitu /reft/1
+
+## US-07 List Produk & US-09 Ubah produk
+
+**Prompt**
+kondisi saat ini produk pada katalog dan detail katalog itu udah mengikuti database, tetapi ketika admin ingin mengubah data tersebut itu belom connect ke database
+
+**Hasil**
+- Melakukan pembaruan pada `app/admin/page.jsx` agar mengambil *list* produk (US-07) langsung dari tabel Supabase `produk` memakai `supabaseServer`, lalu menghapus penggunaan data lokal `produkContoh`.
+- Menyesuaikan `components/FormProduk.jsx` supaya bisa menerima parameter *props* `action` yang nantinya dihubungkan ke Server Action. Menambahkan input tipe tersembunyi (*hidden input*) untuk menampung `id` produk bila tersedia.
+- Membuat Server Action baru `updateProdukAction` di dalam `app/admin/actions.js` untuk menerima pembaruan dari form, memastikan *user admin* sudah terverifikasi dengan `supabase.auth.getUser()`, dan menjalankan pembaruan via `supabase.from("produk").update(...)`.
+- Melakukan penyesuaian pada `app/admin/produk/[id]/ubah/page.jsx` agar detail produk lama diambil dari database Supabase (`.eq("id", id).single()`) dan menautkan form dengan aksi `updateProdukAction`.
+- Menggunakan `revalidatePath("/")` dan `revalidatePath("/admin")` untuk melakukan sinkronisasi cache data terbaru sehingga setelah *admin* berhasil memperbarui produk, katalog publik maupun daftar produk admin langsung ter-update secara instan.
+
+**Perbaikan**
+- (Tidak ada perbaikan yang dilakukan untuk saat ini)
+
+## US-08 Tambah produk
+
+**Prompt**
+sekarang pada bagian tambah produk juga ya
+
+**Hasil**
+- Menghubungkan halaman app/admin/produk/baru/page.jsx ke database dengan menambahkan aksi tambahProdukAction ke form.
+- Menghapus komponen sisa CatatanBelumAktif yang ada di halaman "Tambah produk".
+- Membuat fungsi Server Action tambahProdukAction di dalam app/admin/actions.js yang memvalidasi sesi admin, mengumpulkan isian dari form, lalu melakukan operasi insert data baru ke tabel produk di Supabase.
+- Memastikan halaman utama katalog dan tabel admin langsung disinkronisasi cache-nya melalui mekanisme revalidatePath saat produk berhasil ditambahkan, lalu me-redirect-nya kembali ke tabel dasbor admin.
+
+**Perbaikan**
+- (Belum ada perbaikan sejauh ini)
+
+## US-10 Hapus produk
+
+**Prompt**
+sekarang lanjut ke bagian hapus produk dan pastikan itu semua harus melalui login terlebih dahulu ya
+
+**Hasil**
+- Membuat fungsi Server Action hapusProdukAction di dalam app/admin/actions.js yang akan memvalidasi session login user (supabase.auth.getUser) sebelum menghapus produk berdasarkan id.
+- Menambahkan komponen klien (Client Component) bernama TombolHapus.jsx yang memanggil fungsi hapusProdukAction. Tombol ini juga memunculkan konfirmasi (window.confirm) guna menghindari salah pencet.
+- Memperbarui komponen TabelProduk.jsx di halaman daftar produk dasbor dengan menggunakan komponen <TombolHapus id={produk.id} />.
+- Cache halaman segera disegarkan lewat revalidatePath setelah penghapusan sehingga tabel tidak perlu direfresh manual.
+
+**Perbaikan**
+- (Belum ada perbaikan yang dilakukan)

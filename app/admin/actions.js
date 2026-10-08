@@ -57,3 +57,78 @@ export async function changePasswordAction(prevState, formData) {
   return { success: "Password berhasil diganti." };
 }
 
+import { revalidatePath } from "next/cache";
+
+export async function updateProdukAction(formData) {
+  const supabase = await createClientSsr();
+  
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error("Akses ditolak. Anda harus login terlebih dahulu.");
+  }
+  
+  const id = formData.get("id");
+  const nama = formData.get("nama");
+  const harga = formData.get("harga");
+  const kategori = formData.get("kategori");
+  const foto_url = formData.get("foto_url");
+  const deskripsi = formData.get("deskripsi");
+
+  const { error } = await supabase
+    .from("produk")
+    .update({ nama, harga, kategori, foto_url, deskripsi })
+    .eq("id", id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  redirect("/admin");
+}
+
+export async function tambahProdukAction(formData) {
+  const supabase = await createClientSsr();
+  
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error("Akses ditolak. Anda harus login terlebih dahulu.");
+  }
+  
+  const nama = formData.get("nama");
+  const harga = formData.get("harga");
+  const kategori = formData.get("kategori");
+  const foto_url = formData.get("foto_url");
+  const deskripsi = formData.get("deskripsi");
+
+  const { error } = await supabase
+    .from("produk")
+    .insert([{ nama, harga, kategori, foto_url, deskripsi }]);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  redirect("/admin");
+}
+
+export async function hapusProdukAction(id) {
+  const supabase = await createClientSsr();
+  
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error("Akses ditolak. Anda harus login terlebih dahulu.");
+  }
+  
+  const { error } = await supabase.from("produk").delete().eq("id", id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+}

@@ -1,10 +1,13 @@
 import NavAdmin from "@/components/NavAdmin";
 import TabelProduk from "@/components/TabelProduk";
 import Tombol from "@/components/Tombol";
-import { produkContoh } from "@/lib/data-contoh";
+import { supabaseServer } from "@/lib/supabase/server";
 
-export default function HalamanAdmin() {
-  const daftarProduk = produkContoh;
+export default async function HalamanAdmin() {
+  const { data: daftarProduk } = await supabaseServer
+    .from("produk")
+    .select("*")
+    .order("created_at", { ascending: false });
 
   return (
     <div className="flex flex-col gap-6 py-8">
@@ -13,7 +16,7 @@ export default function HalamanAdmin() {
         <h1 className="text-2xl font-extrabold">Produk</h1>
         <Tombol href="/admin/produk/baru">Tambah produk</Tombol>
       </div>
-      <TabelProduk daftarProduk={daftarProduk} />
+      <TabelProduk daftarProduk={daftarProduk || []} />
     </div>
   );
 }
