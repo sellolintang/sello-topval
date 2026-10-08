@@ -71,8 +71,11 @@ export async function updateProdukAction(formData) {
   const nama = formData.get("nama");
   const harga = formData.get("harga");
   const kategori = formData.get("kategori");
-  const foto_url = formData.get("foto_url");
   const deskripsi = formData.get("deskripsi");
+  
+  // Ambil URL lama dari database untuk jaga-jaga kalau tidak ada upload baru dan URL kosong
+  const { data: produkLama } = await supabase.from("produk").select("foto_url").eq("id", id).single();
+  const foto_url = await uploadFotoIfNeeded(formData, produkLama?.foto_url);
 
   const { error } = await supabase
     .from("produk")
@@ -99,8 +102,9 @@ export async function tambahProdukAction(formData) {
   const nama = formData.get("nama");
   const harga = formData.get("harga");
   const kategori = formData.get("kategori");
-  const foto_url = formData.get("foto_url");
   const deskripsi = formData.get("deskripsi");
+  
+  const foto_url = await uploadFotoIfNeeded(formData, "");
 
   const { error } = await supabase
     .from("produk")
@@ -176,5 +180,49 @@ Buat maksimal 2 paragraf singkat, menarik untuk pembeli, dan gunakan bahasa Indo
   } catch (err) {
     return { error: err.message };
   }
+}
+
+import { supabaseServer } from "@/lib/supabase/server";
+
+async function uploadFotoIfNeeded(formData, fotoUrlLama = "") {
+  const fotoFile = formData.get("foto_file");
+  let finalFotoUrl = formData.get("foto_url"); // manual url input
+
+  // If there's an actual file uploaded
+  if (fotoFile && fotoFile.size > 0) {
+    // 1. Ensure bucket 'produk' exists and is public
+    const { data: buckets } = await supabaseServer.storage.listBuckets();
+    if (!buckets?.find((b) => b.name === "produk")) {
+      await supabaseServer.storage.createBucket("produk", { public: true });
+    }
+
+    // 2. Prepare file
+    const fileExt = fotoFile.name.split(".").pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+    
+    // Convert File to Buffer for Supabase Node.js SDK
+    const arrayBuffer = await fotoFile.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // 3. Upload file
+    const { data, error } = await supabaseServer.storage
+      .from("produk")
+      .upload(fileName, buffer, {
+        contentType: fotoFile.type,
+      });
+
+    if (error) {
+      throw new Error(`Gagal upload foto: ${error.message}`);
+    }
+
+    // 4. Get public URL
+    const { data: publicUrlData } = supabaseServer.storage
+      .from("produk")
+      .getPublicUrl(fileName);
+      
+    finalFotoUrl = publicUrlData.publicUrl;
+  }
+  
+  return finalFotoUrl || fotoUrlLama;
 }
 

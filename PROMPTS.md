@@ -248,3 +248,19 @@ Sebagai admin, saya ingin membuat deskripsi produk secara otomatis dengan AI (Ge
 
 **Perbaikan**
 - (Tidak ada)
+
+
+## [SENDIRI] Fitur Tambahan: Upload Foto Langsung ke Supabase Storage
+
+**Prompt**
+tambahin fitur upload foto langsung ke supabase deh
+
+**Hasil**
+- Menambahkan *input file* (`<input type="file" name="foto_file" />`) ke dalam `components/FormProduk.jsx` dan mengatur atribut `encType="multipart/form-data"` pada `<form>` agar bisa mengirimkan *file* gambar. Kolom URL foto bawaan tetap dibiarkan sebagai opsi alternatif.
+- Membuat fungsi utilitas baru `uploadFotoIfNeeded` di `app/admin/actions.js` yang memanfaatkan *Service Role Key* (`supabaseServer`) dari server.
+- Fungsi tersebut akan mengecek keberadaan *bucket* `produk` di Supabase, lalu membuatnya dengan akses publik secara otomatis jika belum ada.
+- Gambar yang diunggah akan diproses sebagai *Buffer*, disimpan ke *bucket* Supabase Storage dengan nama *file* yang di-*generate* unik, lalu URL publiknya akan ditangkap.
+- Memodifikasi fungsi `tambahProdukAction` dan `updateProdukAction` agar menggunakan `uploadFotoIfNeeded` untuk mengambil *URL final* sebelum data di-`insert` atau di-`update` ke tabel Supabase.
+
+**Perbaikan**
+- (Tidak ada)

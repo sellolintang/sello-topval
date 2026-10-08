@@ -34,7 +34,7 @@ export default function FormProduk({ produk = {}, labelTombol, action }) {
   };
 
   return (
-    <form action={action} className="flex max-w-xl flex-col gap-4">
+    <form action={action} encType="multipart/form-data" className="flex max-w-xl flex-col gap-4">
       {produk.id && <input type="hidden" name="id" value={produk.id} />}
       
       <div className="flex flex-col gap-2">
@@ -67,8 +67,18 @@ export default function FormProduk({ produk = {}, labelTombol, action }) {
         />
       </div>
 
+      <div className="flex flex-col gap-2">
+        <label className="font-semibold">Foto Produk (Upload Baru)</label>
+        <input 
+          type="file" 
+          name="foto_file" 
+          accept="image/*"
+          className="rounded-lg border border-garis bg-latar-belakang px-4 py-3 outline-none focus:border-utama file:mr-4 file:rounded-full file:border-0 file:bg-utama file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-utama-gelap"
+        />
+      </div>
+
       <Input
-        label="Link foto"
+        label="Atau gunakan URL Foto (Kosongkan jika upload baru)"
         name="foto_url"
         placeholder="https://... atau /produk/nama-file.svg"
         defaultValue={produk.foto_url}
