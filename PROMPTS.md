@@ -72,6 +72,9 @@ Buat login admin memakai Supabase Auth (email dan password) dengan @supabase/ssr
 ## US-05 Ganti password
 
 **Prompt:**
+Baca docs/user-stories.md bagian US-05.
+
+Buat Server Action ganti password di app/admin/actions.js untuk admin yang sedang login, memakai Supabase Auth. Validasi di server: password baru minimal 8 karakter dan harus sama dengan konfirmasi. Tampilkan pesan berhasil atau pesan error yang jelas di halaman. Sambungkan ke form di app/admin/password/page.jsx tanpa mengubah tampilannya. Hapus CatatanBelumAktif dari halaman ini.
 
 **Hasil:**
 - Membuat Server Action `changePasswordAction` di `app/admin/actions.js` untuk mengganti password admin via `supabase.auth.updateUser`.
@@ -86,10 +89,18 @@ Buat login admin memakai Supabase Auth (email dan password) dengan @supabase/ssr
 ## US-06 Proteksi halaman admin
 
 **Prompt:**
+Baca AGENTS.md aturan keamanan nomor 3 dan 4, dan docs/user-stories.md bagian US-06.
+
+Buat file proxy.js di root proyek (Next.js 16). Semua rute /admin kecuali /admin/login wajib login dengan Supabase Auth; kalau belum login, alihkan ke /admin/login. Pastikan juga setiap Server Action yang mengubah data memeriksa login di server. Hapus CatatanBelumAktif dari halaman /admin.
 
 **Hasil:**
+- Membuat middleware `proxy.js` di root direktori proyek untuk mencegat akses ke URL `/admin/*` memakai `@supabase/ssr`.
+- Aturan _redirect_ disetel agar pengunjung tanpa sesi akan ditendang ke `/admin/login`, dan admin yang sudah login bila mengunjungi halaman login akan diarahkan ke dasbor `/admin`.
+- Menambahkan validasi `supabase.auth.getUser()` pada fungsi `changePasswordAction` di `app/admin/actions.js` agar hanya bisa dieksekusi bila *user* benar-benar login (melindungi dari serangan eksternal).
+- Menghapus komponen referensi ke `CatatanBelumAktif` yang ada di halaman `app/admin/page.jsx`.
 
 **Perbaikan:**
+- (Tidak ada perbaikan lanjutan)
 
 ## Debugging dan fitur bonus
 

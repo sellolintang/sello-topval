@@ -41,6 +41,11 @@ export async function changePasswordAction(prevState, formData) {
 
   const supabase = await createClientSsr();
   
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: "Akses ditolak. Anda harus login terlebih dahulu." };
+  }
+  
   const { error } = await supabase.auth.updateUser({
     password: passwordBaru,
   });
