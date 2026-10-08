@@ -110,13 +110,14 @@ Tambahkan bagian baru untuk setiap error yang kamu perbaiki atau fitur bonus yan
 
 **Prompt**
 Saat ini muncul error seperti ini 
-## Error Type
+
+Error Type
 Build Error
 
-## Error Message
+Error Message
 Proxy is missing expected function export name
 
-## Build Output
+Build Output
 ./proxy.js
 Error: Proxy is missing expected function export name
 This function is what Next.js runs for every request handled by this proxy (previously called middleware).
@@ -139,3 +140,14 @@ Next.js version: 16.3.8 (Turbopack)
 
 **Perbaikan:**
 - Mengubah nama *export function* di dalam file `proxy.js` dari `export async function middleware(request)` menjadi `export async function proxy(request)`.
+
+## Error-02 Supabase error
+
+**Prompt**
+Terdapat error data dari database tidak bisa diambil
+
+**Hasil**
+Ada kesalahan pada .env.local pada bagian supabase url, yaitu ada /reft/1
+
+**Perbaikan**
+Mengapus url yang berlebihan, yaitu /reft/1
