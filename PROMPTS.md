@@ -74,8 +74,14 @@ Buat login admin memakai Supabase Auth (email dan password) dengan @supabase/ssr
 **Prompt:**
 
 **Hasil:**
+- Membuat Server Action `changePasswordAction` di `app/admin/actions.js` untuk mengganti password admin via `supabase.auth.updateUser`.
+- Menambahkan validasi di sisi server pada action tersebut untuk memastikan password baru minimal 8 karakter dan bernilai sama dengan isian konfirmasi password.
+- Menghubungkan form di `app/admin/password/page.jsx` dengan action tersebut menggunakan `useActionState` (mengubahnya menjadi *Client Component*).
+- Menampilkan pesan berhasil (hijau) atau pesan error (merah) sesuai kembalian dari eksekusi server action.
+- Menghapus komponen referensi ke `CatatanBelumAktif` dan mempertahankan *styling* desain sebelumnya.
 
 **Perbaikan:**
+- (Belum ada perbaikan yang dilakukan)
 
 ## US-06 Proteksi halaman admin
 

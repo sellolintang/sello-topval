@@ -27,3 +27,28 @@ export async function logoutAction() {
   redirect("/admin/login");
 }
 
+export async function changePasswordAction(prevState, formData) {
+  const passwordBaru = formData.get("password_baru");
+  const konfirmasiPassword = formData.get("konfirmasi_password");
+
+  if (!passwordBaru || passwordBaru.length < 8) {
+    return { error: "Password baru minimal 8 karakter." };
+  }
+
+  if (passwordBaru !== konfirmasiPassword) {
+    return { error: "Password dan konfirmasi password tidak sama." };
+  }
+
+  const supabase = await createClientSsr();
+  
+  const { error } = await supabase.auth.updateUser({
+    password: passwordBaru,
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { success: "Password berhasil diganti." };
+}
+
