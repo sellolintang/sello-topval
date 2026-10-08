@@ -1,12 +1,26 @@
 import KartuProduk from "@/components/KartuProduk";
+import FilterKatalog from "@/components/FilterKatalog";
 import { toko } from "@/lib/toko";
 import { supabaseServer } from "@/lib/supabase/server";
 
-export default async function HalamanKatalog() {
-  const { data: daftarProduk, error } = await supabaseServer
+export default async function HalamanKatalog(props) {
+  const searchParams = await props.searchParams;
+  const q = searchParams?.q || "";
+  const kategori = searchParams?.kategori || "";
+
+  let query = supabaseServer
     .from("produk")
     .select("*")
     .order("created_at", { ascending: false });
+
+  if (q) {
+    query = query.ilike("nama", `%${q}%`);
+  }
+  if (kategori) {
+    query = query.eq("kategori", kategori);
+  }
+
+  const { data: daftarProduk, error } = await query;
 
   if (error) {
     return (
@@ -30,6 +44,7 @@ export default async function HalamanKatalog() {
         <h2 id="judul-produk" className="text-xl font-bold">
           Produk kami
         </h2>
+        <FilterKatalog />
         {daftarProduk && daftarProduk.length === 0 ? (
           <p className="text-teks-lembut">Belum ada produk</p>
         ) : (

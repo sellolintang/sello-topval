@@ -194,3 +194,57 @@ sekarang lanjut ke bagian hapus produk dan pastikan itu semua harus melalui logi
 
 **Perbaikan**
 - (Belum ada perbaikan yang dilakukan)
+
+## US-11 Filter kategori atau pencarian
+
+**Prompt**
+Sebagai pengunjung, saya ingin menyaring produk berdasarkan kategori atau mencari nama produk.
+
+**Hasil**
+- Membuat komponen klien `FilterKatalog.jsx` untuk menangani pencarian (`q`) dan *filter* kategori, serta memperbarui parameter URL secara langsung dengan `useRouter` dan `useSearchParams`.
+- Menyesuaikan `app/page.jsx` (halaman katalog) untuk menerima dan membaca `searchParams`.
+- Menggunakan filter `.ilike("nama", %${q}%)` pada kueri Supabase bila ada pencarian, dan `.eq("kategori", kategori)` bila ada filter kategori.
+
+**Perbaikan**
+- (Tidak ada)
+
+## US-12 Pilih jumlah atau varian
+
+**Prompt**
+Sebagai pengunjung, saya ingin memilih jumlah atau varian sebelum memesan, dan pilihan itu ikut tertulis di pesan WhatsApp.
+
+**Hasil**
+- Mengubah komponen `TombolWhatsApp.jsx` menjadi *Client Component* (`"use client"`).
+- Menambahkan *state* lokal (`useState`) untuk menampung data `jumlah` pesanan yang diinginkan pengunjung.
+- Menambahkan *input* tipe angka pada tampilan tombol untuk mengatur jumlah tersebut.
+- Menyisipkan nilai jumlah tersebut ke dalam teks format pesan WhatsApp yang di-encode.
+
+**Perbaikan**
+- (Tidak ada)
+
+## US-13 PWA
+
+**Prompt**
+Sebagai pengunjung, saya ingin memasang katalog di layar HP seperti aplikasi. Ikon tersedia di public/icons.
+
+**Hasil**
+- Menambahkan file `public/manifest.json` yang memuat konfigurasi standar PWA dengan properti *start_url*, *theme_color*, *display*, dan ikon-ikon dari direktori `public/icons`.
+- Membuat *Service Worker* dasar di `public/sw.js` untuk melengkapi syarat instalasi PWA.
+- Memodifikasi `app/layout.jsx` agar menyertakan tag `<link rel="manifest">`, `<meta name="theme-color">`, dan sebuah *script* untuk meregistrasikan `sw.js` ketika *browser* memuat halaman.
+
+**Perbaikan**
+- (Tidak ada)
+
+## US-14 Deskripsi produk dibuat AI
+
+**Prompt**
+Sebagai admin, saya ingin membuat deskripsi produk secara otomatis dengan AI (Gemini API) dari nama dan kategori produk.
+
+**Hasil**
+- Mengubah `components/FormProduk.jsx` menjadi *Client Component* dan menambahkan tombol "✨ Buat dengan AI".
+- Menambahkan *state* `deskripsi` serta referensi input `nama` dan `kategori` untuk mengirimkan data tersebut ke fungsi pembuat deskripsi.
+- Membuat Server Action baru `generateDeskripsiAction` di `app/admin/actions.js` yang dilindungi dengan pengecekan autentikasi admin via `supabase.auth.getUser()`.
+- Menggunakan fungsi bawaan `fetch` untuk memanggil Gemini API (model `gemini-1.5-flash`) guna menghasilkan deskripsi secara dinamis dan menampilkannya kembali ke dalam *textarea* form.
+
+**Perbaikan**
+- (Tidak ada)

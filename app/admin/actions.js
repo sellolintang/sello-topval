@@ -132,3 +132,49 @@ export async function hapusProdukAction(id) {
   revalidatePath("/");
   revalidatePath("/admin");
 }
+
+export async function generateDeskripsiAction(nama, kategori) {
+  const supabase = await createClientSsr();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: "Akses ditolak. Anda harus login terlebih dahulu." };
+  }
+
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return { error: "GEMINI_API_KEY belum diatur di environment variable." };
+  }
+
+  const prompt = `Buat deskripsi menarik untuk produk jualan online.
+Nama produk: ${nama}
+Kategori: ${kategori || "Umum"}
+
+Buat maksimal 2 paragraf singkat, menarik untuk pembeli, dan gunakan bahasa Indonesia yang baik.`;
+
+  try {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+        }),
+      }
+    );
+
+    if (!res.ok) {
+      return { error: `Gagal dari API Gemini (${res.status})` };
+    }
+
+    const data = await res.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    
+    return { deskripsi: text.trim() };
+  } catch (err) {
+    return { error: err.message };
+  }
+}
+
